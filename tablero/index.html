@@ -11,7 +11,11 @@
 <body>
 
   <header>
-    <h1 data-element="title">Juego de Tablero</h1>
+
+    <div class="header-title">
+      <h1 data-element="title">Juego de Tablero</h1>
+      <p data-element="status" aria-live="polite">Partida en curso</p>
+    </div>
     
     <div class="header-actions">
       <button type="button" data-action="toggle-menu">
@@ -73,10 +77,6 @@
       </article>
     </section>
   </main>
-
-  <footer>
-    <p data-element="status">Partida en curso</p>
-  </footer>
 
   <script type="module" src="js/controllers/appController.js"></script>
 </body>

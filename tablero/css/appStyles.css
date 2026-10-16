@@ -200,3 +200,14 @@ La variación de aspecto de las fichas se lleva acabo mediante los atributos:
 [data-has-tooltip]:hover .tooltip-help {
   opacity: 1;
 }
+
+.header-title {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.header-title [data-element="status"] {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
