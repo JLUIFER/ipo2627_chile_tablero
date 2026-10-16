@@ -1,0 +1,202 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem;
+  overflow-x: hidden;
+}
+
+header, footer {
+  width: 100%;
+  max-width: 1400px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+}
+
+.header-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  position: relative;
+}
+
+.main-container {
+  width: 100%;
+  max-width: 1400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  position: relative;
+  padding: 1rem 0;
+}
+
+.panel-controls {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 320px;
+  height: 100vh;
+  background-color: var(--color-bg-secondary);
+  border-left: 1px solid var(--color-border-primary);
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  z-index: 30;
+  box-shadow: -4px 0 16px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out;
+}
+
+.panel-controls[data-state="collapsed"] {
+  transform: translateX(100%);
+}
+
+.panel-controls[data-state="expanded"] {
+  transform: translateX(0);
+}
+
+.panel-controls-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.panel-game {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+}
+
+.board-grid {
+  --grid-size: 3;
+  display: grid;
+  grid-template-columns: repeat(var(--grid-size), 1fr);
+  grid-template-rows: repeat(var(--grid-size), 1fr);
+  gap: 0.5rem;
+  background-color: var(--color-bg-board);
+  border-radius: 1rem;
+  padding: 1rem;
+  width: min(75vh, 90vw);
+  max-width: 700px;
+  aspect-ratio: 1 / 1;
+}
+
+.board-cell {
+  background-color: var(--color-bg-cell);
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: background-color 0.2s ease;
+}
+
+.board-cell[data-drop-zone].is-over {
+  background-color: var(--color-state-hover);
+  outline: 2px dashed var(--color-primary);
+}
+
+/* 
+La variación de aspecto de las fichas se lleva acabo mediante los atributos:
+    data-type: Aplica las variables de la tríada cromática.   
+    data-size: Modifica dinámicamente la variable --piece-scale para alterar la magnitud 
+            (pequeña, mediana, grande).   
+    data-shape: Define la geometría visual de las fichas (border-radius).  */
+
+.piece {
+  --piece-scale: 0.8;
+  width: calc(100% * var(--piece-scale));
+  height: calc(100% * var(--piece-scale));
+  cursor: grab;
+  user-select: none;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.piece:active {
+  cursor: grabbing;
+}
+
+.piece.is-dragging {
+  opacity: 0.4;
+  transform: scale(0.95);
+}
+
+.piece[data-type="primary"] {
+  background-color: var(--color-primary);
+}
+
+.piece[data-type="secondary"] {
+  background-color: var(--color-secondary);
+}
+
+.piece[data-type="tertiary"] {
+  background-color: var(--color-tertiary);
+}
+
+.piece[data-shape="circle"] {
+  border-radius: 50%;
+}
+
+.piece[data-shape="square"] {
+  border-radius: 15%;
+}
+
+.piece[data-shape="rounded"] {
+  border-radius: 35%;
+}
+
+.piece[data-size="small"] {
+  --piece-scale: 0.55;
+}
+
+.piece[data-size="medium"] {
+  --piece-scale: 0.75;
+}
+
+.piece[data-size="large"] {
+  --piece-scale: 0.92;
+}
+
+.tooltip-help {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 0.5rem;
+  background-color: var(--color-text-primary);
+  color: var(--color-bg-secondary);
+  padding: 0.5rem 0.8rem;
+  border-radius: 0.25rem;
+  font-size: var(--font-size-xs);
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 20;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+[data-has-tooltip]:hover .tooltip-help {
+  opacity: 1;
+}
