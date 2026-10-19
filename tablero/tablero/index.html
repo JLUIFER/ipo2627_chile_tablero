@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Juego de Tablero NxN</title>
+  <link rel="stylesheet" href="css/appColors.css">
+  <link rel="stylesheet" href="css/appFonts.css">
+  <link rel="stylesheet" href="css/appStyles.css">
+  <script type="module" src="js/controllers/appController.js"></script>
+</head>
+<body>
+
+  <header>
+    
+    <!-- En index.html dentro del <header> -->
+<div class="header-title">
+  <h1 data-element="title">Juego de Tablero</h1>
+  <p class="header-status" data-element="status" aria-live="polite">Partida en curso</p>
+</div>
+    
+    <div class="header-actions">
+      <button type="button" class="btn btn-neutral" data-action="toggle-menu">
+        Configuración
+      </button>
+
+      <button type="button" class="btn btn-neutral" data-action="help" data-has-tooltip>
+        Mecánica del Juego
+      </button>
+    </div>
+  </header>
+
+  <main class="main-container">
+    <aside class="panel-controls" data-element="controls-panel" data-state="collapsed">
+      <div class="panel-controls-header">
+        <h2>Configuración</h2>
+        <button type="button" class="btn-icon" data-action="close-menu" aria-label="Cerrar configuración">✕</button>
+      </div>
+
+      <div class="control-group">
+        <label for="select-size" class="form-label">Dimensión (N x N):</label>
+        <input type="number" id="select-size" class="form-control" min="3" max="8" value="3" data-control="board-size">
+      </div>
+
+      <div class="control-group">
+        <label for="select-piece-size" class="form-label">Tamaño de Fichas:</label>
+        <select id="select-piece-size" class="form-control" data-control="piece-size">
+          <option value="small">Pequeña</option>
+          <option value="medium" selected>Mediana</option>
+          <option value="large">Grande</option>
+        </select>
+      </div>
+
+      <div class="control-group">
+        <label for="select-piece-shape" class="form-label">Forma de Fichas:</label>
+        <select id="select-piece-shape" class="form-control" data-control="piece-shape">
+          <option value="circle" selected>Círculo</option>
+          <option value="square">Cuadrado</option>
+          <option value="rounded">Bordes Redondeados</option>
+        </select>
+      </div>
+
+      <div class="control-group">
+        <label for="range-hue" class="form-label">Tono Cromático:</label>
+        <input type="range" id="range-hue" class="form-range" min="0" max="360" value="210" data-control="hue">
+      </div>
+
+      <button type="button" class="btn btn-success" data-action="restart">Nueva Partida</button>
+    </aside>
+
+    <section class="panel-game">
+      <div class="board-grid" id="board" data-element="board"></div>
+      
+      <article class="help-card" data-element="help-info" hidden>
+        <div class="help-card-header">
+          <h3>Instrucciones de Juego</h3>
+          <button type="button" class="btn-icon" data-action="close-help" aria-label="Cerrar instrucciones">✕</button>
+        </div>
+        <p>Arrastra una ficha y suéltala sobre otra celda para intercambiar sus posiciones.</p>
+        <p>El juego concluye con éxito cuando todas las celdas de cada fila contengan fichas del mismo tipo.</p>
+      </article>
+
+      <div class="modal-overlay" data-element="win-modal" hidden>
+        <div class="win-card">
+          <div class="win-icon">🎉</div>
+          <h2>¡Enhorabuena!</h2>
+          <p>Has completado con éxito todas las filas del tablero.</p>
+          <button type="button" class="btn btn-success" data-action="win-restart">Nueva Partida</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  
+</body>
+</html>
