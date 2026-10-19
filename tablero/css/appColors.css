@@ -32,4 +32,12 @@ qué color elija el usuario. */
   --color-state-dragging: hsl(var(--hue-base), var(--sat-base), 40%);
   --color-state-hover: hsl(calc(var(--hue-base) + 120), 70%, 90%);
   --color-state-dropped: hsl(calc(var(--hue-base) + 120), 80%, 45%);
+
+  /* Colores fijos para botones */
+  --color-btn-success: #10b981;        /* Verde para Nueva Partida */
+  --color-btn-success-hover: #059669;  /* Verde más oscuro al pasar el cursor */
+
+  --color-btn-neutral: #f3f4f6;        /* Fondo gris claro para botones secundarios */
+  --color-btn-neutral-hover: #e5e7eb;  /* Gris un poco más oscuro al pasar el cursor */
+  --color-btn-neutral-border: #d1d5db; /* Borde gris */
 }

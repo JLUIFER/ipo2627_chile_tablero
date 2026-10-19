@@ -1,116 +1,122 @@
 
+/*
+  Modelo: estado y reglas del juego. No conoce el DOM.
+*/
+
+// Tres tipos de ficha (el CSS les asigna color mediante data-type)
+const TIPOS = ['primary', 'secondary', 'tertiary'];
+const TAMANO_MINIMO = 3;
 
 export class Juego {
-    constructor(tamanoTablero = 3) {
-        this.tamanoTablero = tamanoTablero;
-        this.tamanoPieza = 'medium';
-        this.formaPieza = 'circulo';
-        this.hue = 210;
-        this.tablero = [];
-        this.esGameOver = false;
+  constructor(tamanoTablero = TAMANO_MINIMO) {
+    this.tamanoTablero = tamanoTablero;
+    this.tamanoPieza = 'medium';
+    this.formaPieza = 'circle';   // debe coincidir con data-shape del CSS
+    this.hue = 210;
+    this.tablero = [];
+    this.esGameOver = false;
 
-        this.inicioJuego();
+    this.inicioJuego();
+  }
+
+  /*
+    Reparto resoluble: cada fila "reserva" un tipo (fila r -> TIPOS[r % 3]), así el
+    número de fichas de cada tipo es siempre múltiplo de N y existe al menos una
+    ordenación ganadora, para cualquier N >= 3. Después se mezclan todas las fichas.
+    Se repite el sorteo si el tablero sale ya resuelto.
+  */
+  inicioJuego() {
+    const n = this.tamanoTablero;
+    do {
+      const piezas = [];
+      for (let r = 0; r < n; r++) {
+        const tipo = TIPOS[r % TIPOS.length];
+        for (let c = 0; c < n; c++) piezas.push(tipo);
+      }
+      this.shuffle(piezas);
+      this.tablero = Array.from({ length: n }, (_, r) =>
+        piezas.slice(r * n, (r + 1) * n));
+    } while (this.tableroResuelto());
+    this.esGameOver = false;
+  }
+
+  // Fisher-Yates
+  shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
     }
+  }
 
-    inicioJuego() {
-        this.esGameOver = false;
-        const tiposFicha = ['primary', 'secondary', 'tertiary'];
-        const numTotalCeldas = this.tamanoTablero * this.tamanoTablero;
-        const piezas = [];
+  // Solo consulta: true si todas las filas son de un único tipo (sin efectos secundarios)
+  tableroResuelto() {
+    return this.tablero.every((fila) => fila.every((tipo) => tipo === fila[0]));
+  }
 
-        for (let i = 0; i < numTotalCeldas; i++) {
-            //La operación i % types.length distribuye de forma equitativa los 3 tipos de fichas a lo largo de las celdas
-            piezas.push(tiposFicha[i % tiposFicha.length]);
-        }
+  // Actualiza el estado de fin de partida a partir del tablero actual
+  checkEsGanador() {
+    this.esGameOver = this.tableroResuelto();
+    return this.esGameOver;
+  }
 
-        this.shuffle(piezas);
+  coordenadaValida(fila, col) {
+    const n = this.tamanoTablero;
+    return Number.isInteger(fila) && Number.isInteger(col) &&
+           fila >= 0 && fila < n && col >= 0 && col < n;
+  }
 
-        this.tablero = [];
-        for (let r = 0; r < this.tamanoTablero; r++) {
-            const fila = [];
-            for (let c = 0; c < this.tamanoTablero; c++) {
-                fila.push(piezas[r * this.tamanoTablero + c])
-            }
-            this.tablero.push(fila);
-        }
+  // Intercambia dos celdas. Devuelve true solo si el movimiento se realizó.
+  mueveFicha(fromFila, fromColumna, toFila, toColumna) {
+    if (this.esGameOver) return false;
+    if (!this.coordenadaValida(fromFila, fromColumna) ||
+        !this.coordenadaValida(toFila, toColumna)) return false;
+    if (fromFila === toFila && fromColumna === toColumna) return false;
 
+    const t = this.tablero;
+    [t[fromFila][fromColumna], t[toFila][toColumna]] =
+      [t[toFila][toColumna], t[fromFila][fromColumna]];
+
+    this.checkEsGanador();
+    return true;
+  }
+
+  // Cualquier cambio de configuración genera un tablero nuevo (enunciado)
+
+  setTamanoTablero(tam) {
+    if (Number.isInteger(tam) && tam >= TAMANO_MINIMO) {
+      this.tamanoTablero = tam;
+      this.inicioJuego();
     }
+  }
 
-    //implementa el algoritmo de Fisher-Yates para mezclar el array unidimensional de fichas de manera imparcial
-    shuffle(array) {
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-        }
-    }
+  setTamanoPieza(tam) {
+    this.tamanoPieza = tam;
+    this.inicioJuego();
+  }
 
-    // con este metodo podemos intercambiar la posicion de las fichas
+  setFormaPieza(forma) {
+    this.formaPieza = forma;
+    this.inicioJuego();
+  }
 
-    mueveFicha(fromFila, fromColumna, toFila, toColumna) {
-        if (this.esGameOver) return false;
-        const temp = this.tablero[fromFila][fromColumna];
-        this.tablero[fromFila][fromColumna] = this.tablero[toFila][toColumna]
-        this.tablero[toFila][toColumna] = temp;
-        this.checkEsGanador();
-        return true;
-    }
-    // Revisa el tablero fila por fila. Toma el primer elemento de la fila this.board[r][0] como referencia y lo compara con todas las demás columnas c de esa misma fila. Si encuentra un elemento diferente, se detiene e indica que no hay victoria (return false). 
-    // Si recorre todas las filas sin encontrar diferencias dentro de ninguna de ellas, marca isGameOver = true
-    checkEsGanador() {
-        for (let r = 0; r < this.tamanoTablero; r++) {
-            const primerTipo = this.tablero[r][0];
-            for (let c = 1; c < this.tamanoTablero; c++) {
-                if (this.tablero[r][c] !== primerTipo) {
-                    this.esGameOver = false;
-                    return false;
-                }
-            }
-        }
-        this.esGameOver = true;
-        return true;
-    }
+  setHue(hue) {
+    this.hue = hue;
+    this.inicioJuego();
+  }
 
-    // metodos para cambiar parametros 
+  getEstadoTablero() {
+    return this.tablero;
+  }
 
-    setTamanoTablero (tam){
-        if (tam >= 3){
-            this.tamanoTablero = tam
-            this.inicioJuego();
-        }
-    }
+  getTamanoEstado() {
+    return this.tamanoTablero;
+  }
 
-    setTamanoPieza (tam){
-        this.tamanoPieza = tam;
-        this.inicioJuego();
-    }
+  getConfigPieza() {
+    return { tamano: this.tamanoPieza, forma: this.formaPieza, hue: this.hue };
+  }
 
-    setFormaPieza (forma){
-        this.formaPieza = forma;
-        this.inicioJuego();
-    }
-
-    setHue (hue){
-        this.hue = hue;
-        this.inicioJuego();
-    }
-
-    getEstadoTablero(){
-        return this.tablero;
-    }
-
-    getTamanoEstado(){
-        return this.tamanoTablero;
-    }
-
-    getConfigPieza(){
-        return {
-            tamano : this.tamanoPieza,
-            forma: this.formaPieza,
-            hue: this.hue,
-        };
-    }
-
-    getEsGameOver(){
-        return this.esGameOver;
-    }
+  getEsGameOver() {
+    return this.esGameOver;
+  }
 }
